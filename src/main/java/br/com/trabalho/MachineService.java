@@ -27,6 +27,27 @@ public class MachineService {
         data.createRegistersMap();
         initializeRegisters();
         showRegistersInitialized();
+        int choice;
+        do {
+            System.out.println(DataDTO.SEPARATOR);
+            System.out.println("Opções de Execução");
+            System.out.println("1 - Ler programa monolítico do arquivo TXT");
+            System.out.println("0 - Encerrar Execução");
+            System.out.println(DataDTO.SEPARATOR);
+            choice = new Scanner(System.in).nextInt();
+            switch (choice) {
+                case 1:
+                    monolithicProgram();
+                    break;
+//                case 2:
+//                    function2();
+//                    break;
+            }
+        } while (choice != 0);
+    }
+
+    private void monolithicProgram() {
+        //TODO
     }
 
     private void showRegistersInitialized() {
