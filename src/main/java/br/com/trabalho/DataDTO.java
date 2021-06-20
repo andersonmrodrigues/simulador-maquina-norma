@@ -4,17 +4,16 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.extern.java.Log;
 
 import java.io.*;
 import java.math.BigInteger;
 import java.util.LinkedHashMap;
+import java.util.logging.Logger;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Log
 public class DataDTO {
 
     public static final String SEPARATOR = "------------------------------------";
@@ -22,21 +21,22 @@ public class DataDTO {
     private File file;
     private LinkedHashMap<String, BigInteger> registersMap;
     private LinkedHashMap<Integer, String> fileLines;
+    private Logger logger;
 
     public void createRegistersMap() {
-        log.info("Gerando registradores");
+        logger.info("Gerando registradores");
         registersMap = new LinkedHashMap<>();
         String[] alphabet = "abcdefghijklmnopqrstuvwxyz".split("");
         for (int i = 0; i < registers.intValue(); i++) {
             registersMap.put(alphabet[i], BigInteger.ZERO);
         }
-        log.info("Registradores Gerados");
+        logger.info("Registradores Gerados");
     }
 
     public void createFileMap() {
         int count = 1;
         fileLines = new LinkedHashMap<>();
-        log.info("Lendo linhas do arquivos");
+        logger.info("Lendo linhas do arquivo");
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             String line;
             while ((line = br.readLine()) != null) {
@@ -45,13 +45,14 @@ public class DataDTO {
                 count++;
             }
         } catch (FileNotFoundException e) {
-            log.warning("Arquivo não encontrado");
+            logger.warning("Arquivo não encontrado");
             e.printStackTrace();
         } catch (IOException e) {
-            log.warning("Erro ao ler arquivo");
+            logger.warning("Erro ao ler arquivo");
             e.printStackTrace();
         }
-        log.info("Total de " + count + " linhas lidas");
+        logger.info("Total de " + count + " linhas lidas");
 
     }
+
 }
