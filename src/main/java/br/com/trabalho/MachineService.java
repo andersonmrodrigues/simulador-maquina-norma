@@ -22,6 +22,7 @@ public class MachineService {
         log.info("Verificando se existe o arquivo na caminho especificado");
         data.setFile(checkIfFileExists());
         log.info("Arquivo encontrado");
+        data.createFileMap();
         data.setRegisters(getIntWithQuestion("Informe a quantidade de Registradores"));
         data.createRegistersMap();
         initializeRegisters();
