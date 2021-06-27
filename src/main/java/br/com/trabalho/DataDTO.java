@@ -20,10 +20,14 @@ public class DataDTO {
     private BigInteger registers;
     private File fileMonolithic;
     private File fileIterative;
+    private File fileRecursive;
     private LinkedHashMap<String, BigInteger> registersMap;
     private LinkedHashMap<Integer, String> fileMonolithicLines;
     private LinkedHashMap<Integer, String> fileIterativeLines;
+    private LinkedHashMap<Integer, String> fileRecursiveLines;
     private Integer iterativeLastLineNumber;
+    private Integer recursiveLastLineNumber;
+    private String firstDef;
     private Logger logger;
 
     public void createRegistersMap() {
@@ -102,4 +106,29 @@ public class DataDTO {
         return line.matches("(.*)até ([a-zA-Z]*)_zero faça(.*)");
     }
 
+    public boolean isMatchesDef(String line) {
+        return line.matches("(.*)def(.*)");
+    }
+
+    public void recursiveMap() {
+        int count = 1;
+        fileRecursiveLines = new LinkedHashMap<>();
+        logger.info("Lendo linhas do arquivo");
+        try (BufferedReader br = new BufferedReader(new FileReader(fileRecursive))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                fileRecursiveLines.put(count, line
+                        .trim());
+                count++;
+            }
+        } catch (FileNotFoundException e) {
+            logger.warning("Arquivo não encontrado");
+            e.printStackTrace();
+        } catch (IOException e) {
+            logger.warning("Erro ao ler arquivo");
+            e.printStackTrace();
+        }
+        this.recursiveLastLineNumber = count;
+        logger.info("Total de " + count + " linhas lidas");
+    }
 }

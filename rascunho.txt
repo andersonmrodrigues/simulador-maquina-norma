@@ -34,3 +34,12 @@ senão )
 x_zero: Testa se o registrador x vale zero. Exemplos: a_zero testa
 ad_x: Incrementa o registrador x. Exemplo ad_c faz o registrador c
 sub_x: Decrementa o registrador x. Exemplo sub_d faz o registrador d diminuir uma unidade;
+
+
+
+R def (se a_zero então v senão S;R),
+S def sub_a;ad_b
+
+
+duplica é R onde
+R def (se a_zero então v senão sub_a;R;ad_a;ad_a)

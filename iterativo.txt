@@ -1,3 +1,5 @@
-até a_zero faça (
-ad_a;
-ad_b)
+até b_zero faça (
+    ad_a;
+    ad_a;
+    sub_b;
+    (se c_zero então ad_a senão sub_d);)

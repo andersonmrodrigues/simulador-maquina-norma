@@ -1,0 +1,2 @@
+duplica é R onde
+R def (se a_zero então v senão sub_a;R;ad_a;ad_a)

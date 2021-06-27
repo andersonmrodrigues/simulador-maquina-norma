@@ -5,6 +5,7 @@ import lombok.extern.java.Log;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.LinkedHashMap;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.logging.FileHandler;
@@ -16,6 +17,7 @@ public class MachineService {
     private DataDTO data;
     private static final String PATHMONOLITHIC = "D:\\Projetos\\simulador-maquina-norma\\monolitico.txt";
     private static final String PATHITERATIVE = "D:\\Projetos\\simulador-maquina-norma\\iterativo.txt";
+    private static final String PATHRECURSIVE = "D:\\Projetos\\simulador-maquina-norma\\recursivo.txt";
     private static final String FILELOGPATH = "D:\\Projetos\\simulador-maquina-norma\\log.txt";
 
 
@@ -31,8 +33,9 @@ public class MachineService {
 
             System.out.println(DataDTO.SEPARATOR);
             System.out.println("Opções de Execução");
-            System.out.println("1 - Ler programa monolítico do arquivo TXT");
+            System.out.println("1 - Ler programa monolítico");
             System.out.println("2 - Converter programa iterativo para monolítico");
+            System.out.println("3 - Ler programa recursivo");
             System.out.println("8 - Ver Registradores");
             System.out.println("9 - Reiniciar tudo (ler arquivo, inicializar registradores, etc.)");
             System.out.println("0 - Encerrar Execução");
@@ -47,6 +50,9 @@ public class MachineService {
                     setupIterative();
                     convertIterative();
                     break;
+                case 3:
+                    setupRecursive();
+                    recursiveProgram();
                 case 8:
                     showRegisters();
                     break;
@@ -57,8 +63,97 @@ public class MachineService {
         } while (choice != 0);
     }
 
+    private void setupRecursive() {
+        log.info("Verificando se existe o arquivo programa recursivo no caminho especificado");
+        data.setFileRecursive(checkIfFileExists(PATHRECURSIVE));
+        log.info("Arquivo programa recursivo encontrado");
+        data.recursiveMap();
+        data.setRegisters(getIntWithQuestion("Informe a quantidade de Registradores"));
+        data.createRegistersMap();
+        initializeRegisters();
+    }
+
+    private void recursiveProgram() {
+        Set<Integer> keys = data.getFileRecursiveLines().keySet();
+        LinkedHashMap<String, String> mapDefs = new LinkedHashMap<>();
+        int instruction = 0;
+        mapDefs = mappingDefs(keys, mapDefs);
+        execDef(mapDefs.get(data.getFirstDef()), mapDefs);
+    }
+
+    private void execDef(String line, LinkedHashMap<String, String> mapDefs) {
+        log.info("Executando " + line);
+        String[] commands = line.split(" ");
+        if (data.isMatchesSeSenao(line)) {
+            if (verifyRegister(commands[1])) {
+                return;
+            }
+            execCommands(mapDefs, commands[5]);
+        } else if (data.isMatchesAd(line) || data.isMatchesSub(line)) {
+            execCommands(mapDefs, commands[0]);
+        }
+    }
+
+    private void execCommands(LinkedHashMap<String, String> mapDefs, String command) {
+        String[] execs = command.split(";");
+        for (int i = 0; i < execs.length; i++) {
+            String exec = execs[i].replaceAll("\\)", "").replaceAll(",", "");
+            if (mapDefs.containsKey(exec)) {
+                execDef(mapDefs.get(exec), mapDefs);
+            } else {
+                doSumOrSub(exec);
+            }
+        }
+    }
+
+    private void doSumOrSub(String exec) {
+        String register = exec.replaceAll("ad_", "").replaceAll("sub_", "");
+        if (exec.contains("ad_")) {
+            log.info("adição de +1 no registrador " + register);
+            BigInteger value = getValueAndValid(register);
+            data.getRegistersMap().put(register, value.add(BigInteger.ONE));
+        } else if (exec.contains("sub_")) {
+            log.info("substração de -1 no registrador " + register);
+            BigInteger value = getValueAndValid(register);
+            data.getRegistersMap().put(register, value.subtract(BigInteger.ONE));
+        } else {
+            log.warning("COMMAND INVALID");
+            System.exit(1);
+        }
+    }
+
+    private LinkedHashMap<String, String> mappingDefs(Set<Integer> keys, LinkedHashMap<String, String> mapDefs) {
+        int count = 0;
+        for (Integer key : keys) {
+            String line = data.getFileRecursiveLines().get(key);
+            if (data.isMatchesDef(line)) {
+                String[] commands = line.split(" ");
+                if (count == 0) data.setFirstDef(commands[0]);
+                count++;
+                if (data.isMatchesSeSenao(line)) {
+                    StringBuilder commandsToExec = new StringBuilder();
+                    commandsToExec
+                            .append(commands[2] + " ")
+                            .append(commands[3] + " ")
+                            .append(commands[4] + " ")
+                            .append(commands[5] + " ")
+                            .append(commands[6] + " ")
+                            .append(commands[7]);
+                    mapDefs.put(commands[0], commandsToExec.toString());
+                } else if (data.isMatchesAd(line) || data.isMatchesSub(line)) {
+                    StringBuilder commandsToExec = new StringBuilder();
+                    commandsToExec
+                            .append(commands[2]);
+                    mapDefs.put(commands[0], commandsToExec.toString());
+                }
+            }
+        }
+        return mapDefs;
+    }
+
     private void setLogParams() throws IOException {
         FileHandler fh = new FileHandler(FILELOGPATH);
+        log.setUseParentHandlers(false);
         log.addHandler(fh);
         fh.setFormatter(new SimpleFormatter());
         log.setUseParentHandlers(false);
@@ -73,6 +168,7 @@ public class MachineService {
             instruction = setInstruction(monolithic, instruction);
             String[] commands = line.split(" ");
             if (data.isMatchesAteFaca(line) || data.isMatchesEnquantoFaca(line)) {
+                log.info("Convertendo AteFaca ou EnquantoFaca para condição SeEntaoSenao");
                 monolithic
                         .append("se ")
                         .append(commands[1])
@@ -80,6 +176,7 @@ public class MachineService {
                         .append(instruction + 1)
                         .append(System.lineSeparator());
             } else if (!data.isMatchesSeSenao(line) && (data.isMatchesAd(line) || data.isMatchesSub(line))) {
+                log.info("Convertendo Operações para FaçaVaPara");
                 monolithic
                         .append("faça ")
                         .append(commands[0])
@@ -87,6 +184,7 @@ public class MachineService {
                         .append(instruction >= getLast() ? 1 : instruction + 1)
                         .append(System.lineSeparator());
             } else if (data.isMatchesSeSenao(line)) {
+                log.info("Convertendo condição para SeEntaoSenao");
                 monolithic
                         .append("se ")
                         .append(commands[1])
@@ -158,12 +256,9 @@ public class MachineService {
         log.info("Instrução: " + line);
         String[] commands = line.split(" ");
         if (commands[0].contains("se")) {
-            log.info("Vericando SE o ");
             if (verifyRegister(commands[1])) {
-                log.info("Registrador é igual ZERO");
                 verifyIfExistsAndCallExecute(commands[4]);
             } else {
-                log.info("Registrador não era igual ZERO");
                 verifyIfExistsAndCallExecute(commands[7]);
             }
         } else if (commands[0].contains("faça") || commands[0].contains("faca")) {
@@ -210,9 +305,16 @@ public class MachineService {
     }
 
     private boolean verifyRegister(String command) {
+        log.info("Vericando SE o ");
         String register = command.replaceAll("_zero", "");
         log.info("registrador '" + register + "' é igual a ZERO");
-        return data.getRegistersMap().get(register).equals(BigInteger.ZERO) || data.getRegistersMap().get(register).equals(new BigInteger("0"));
+        boolean equalsZero = data.getRegistersMap().get(register).equals(BigInteger.ZERO) || data.getRegistersMap().get(register).equals(new BigInteger("0"));
+        if (equalsZero) {
+            log.info("Registrador é igual ZERO");
+        } else {
+            log.info("Registrador não era igual ZERO");
+        }
+        return equalsZero;
     }
 
     private void showRegisters() {
