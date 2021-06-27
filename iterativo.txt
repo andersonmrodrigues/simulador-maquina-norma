@@ -1,0 +1,3 @@
+até a_zero faça (
+ad_a;
+ad_b)

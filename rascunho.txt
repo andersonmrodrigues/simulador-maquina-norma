@@ -1,0 +1,36 @@
+até a_zero faça (ad_a; ad_b)
+
+até zero_b faça (ad_a;ad_a;sub_b;(se zero_c então ad_a senão sub_d))
+
+até b_zero faça (
+    ad_a;
+    ad_a;
+    sub_b;
+    (se c_zero então ad_a senão sub_d);
+)
+
+1: se zero_b então vá_para 9 senão vá_para 2
+2: faça ad_a vá_para 3
+3: faça ad_a vá_para 4
+4: faça sub_b vá_para 5
+5: se zero_c então vá_para 6 senão và_para 7
+6: faça ad_a vá_para 99
+7: faca sub_d vá_para 99
+
+([a-zA-Z]*)
+
+até a_zero
+faca (✓);
+enquanto a_zero
+faca (ad_a;sub_b;(se b_zero entao sub_b; até a_zero fa
+
+
+(se a_zero
+então enquanto T2
+faça (até T3
+faça (V; W))
+senão )
+
+x_zero: Testa se o registrador x vale zero. Exemplos: a_zero testa
+ad_x: Incrementa o registrador x. Exemplo ad_c faz o registrador c
+sub_x: Decrementa o registrador x. Exemplo sub_d faz o registrador d diminuir uma unidade;
