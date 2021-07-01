@@ -14,7 +14,7 @@ import java.util.logging.SimpleFormatter;
 @Log
 public class MachineService {
 
-    private DataDTO data;
+    private final DataDTO data;
     private static final String PATHMONOLITHIC = "D:\\Projetos\\simulador-maquina-norma\\monolitico.txt";
     private static final String PATHITERATIVE = "D:\\Projetos\\simulador-maquina-norma\\iterativo.txt";
     private static final String PATHRECURSIVE = "D:\\Projetos\\simulador-maquina-norma\\recursivo.txt";
@@ -26,11 +26,16 @@ public class MachineService {
         this.data.setLogger(log);
     }
 
+    /**
+     * Método responsável pela inicialização do programa, apresentando no terminal a lista de
+     * opções que o usuário pode executar.
+     *
+     * @throws IOException
+     */
     void execute() throws IOException {
         setLogParams();
         int choice;
         do {
-
             System.out.println(DataDTO.SEPARATOR);
             System.out.println("Opções de Execução");
             System.out.println("1 - Ler programa monolítico");
@@ -63,6 +68,10 @@ public class MachineService {
         } while (choice != 0);
     }
 
+    /**
+     * Método responsável pela validação da existência do arquivo com o programa recursivo, registrar as
+     * linhas e inicializar os registradores.
+     */
     private void setupRecursive() {
         log.info("Verificando se existe o arquivo programa recursivo no caminho especificado");
         data.setFileRecursive(checkIfFileExists(PATHRECURSIVE));
@@ -73,6 +82,10 @@ public class MachineService {
         initializeRegisters();
     }
 
+    /**
+     * Método responsável pela execução do programa recursivo, verificando os “def” definidos e comandos e os
+     * chamando de forma recursiva até atingir as condições.
+     */
     private void recursiveProgram() {
         Set<Integer> keys = data.getFileRecursiveLines().keySet();
         LinkedHashMap<String, String> mapDefs = new LinkedHashMap<>();
@@ -81,6 +94,14 @@ public class MachineService {
         execDef(mapDefs.get(data.getFirstDef()), mapDefs);
     }
 
+    /**
+     * Método responsável pela execução das linhas dos programa recursivo, conforme as “def”, o próprio método pode
+     * fazer uma chamada a ele mesmo caso a instrução seja essa. Nele é verificado se existe alguma condição ou
+     * operação a ser executada na linha.
+     *
+     * @param line
+     * @param mapDefs
+     */
     private void execDef(String line, LinkedHashMap<String, String> mapDefs) {
         log.info("Executando " + line);
         String[] commands = line.split(" ");
@@ -94,6 +115,13 @@ public class MachineService {
         }
     }
 
+    /**
+     * Método responsável por verificar cada comando passado na linha, caso seja uma referência a uma outra “ref”,
+     * a chamada recursiva é feita, caso seja uma operação (adição ou subtração), é chamado o método responsável.
+     *
+     * @param mapDefs
+     * @param command
+     */
     private void execCommands(LinkedHashMap<String, String> mapDefs, String command) {
         String[] execs = command.split(";");
         for (int i = 0; i < execs.length; i++) {
@@ -106,6 +134,11 @@ public class MachineService {
         }
     }
 
+    /**
+     * Método responsável pela execução da adição ou subtração no registrar informado.
+     *
+     * @param exec
+     */
     private void doSumOrSub(String exec) {
         String register = exec.replaceAll("ad_", "").replaceAll("sub_", "");
         if (exec.contains("ad_")) {
@@ -122,6 +155,13 @@ public class MachineService {
         }
     }
 
+    /**
+     * Método responsável por mapear as instruções de todos os “def” do programa recursivo.
+     *
+     * @param keys
+     * @param mapDefs
+     * @return
+     */
     private LinkedHashMap<String, String> mappingDefs(Set<Integer> keys, LinkedHashMap<String, String> mapDefs) {
         int count = 0;
         for (Integer key : keys) {
@@ -151,14 +191,21 @@ public class MachineService {
         return mapDefs;
     }
 
+    /**
+     * Método responsável por configurar os logs e mapear a localização onde o arquivo de logs será salvo.
+     *
+     * @throws IOException
+     */
     private void setLogParams() throws IOException {
         FileHandler fh = new FileHandler(FILELOGPATH);
         log.setUseParentHandlers(false);
         log.addHandler(fh);
         fh.setFormatter(new SimpleFormatter());
-        log.setUseParentHandlers(false);
     }
 
+    /**
+     * Método responsável por converter o programa iterativo em monolitico.
+     */
     private void convertIterative() {
         StringBuilder monolithic = new StringBuilder();
         Set<Integer> keys = data.getFileIterativeLines().keySet();
@@ -210,10 +257,20 @@ public class MachineService {
         printMonolithic(monolithic);
     }
 
+    /**
+     * Método responsável por retornar o número da última linha do programa iterativo
+     *
+     * @return
+     */
     private int getLast() {
         return data.getIterativeLastLineNumber() - 1;
     }
 
+    /**
+     * Método responsável por “printar” o resultado da conversão do programa iterativo.
+     *
+     * @param monolithic
+     */
     private void printMonolithic(StringBuilder monolithic) {
         System.out.println(DataDTO.SEPARATOR);
         System.out.println("Resultado da Conversão:");
@@ -221,7 +278,13 @@ public class MachineService {
         System.out.println(DataDTO.SEPARATOR);
     }
 
-
+    /**
+     * Método responsável por criar a “string” com o número da instrução na conversão do programa iterativo
+     *
+     * @param monolithic
+     * @param instruction
+     * @return
+     */
     private int setInstruction(StringBuilder monolithic, int instruction) {
         instruction++;
         monolithic.append(instruction);
@@ -229,6 +292,9 @@ public class MachineService {
         return instruction;
     }
 
+    /**
+     * Método responsável por inicializar os dados necessários para a execução da conversão do programa iterativo para monolítico.
+     */
     private void setupIterative() {
         log.info("Verificando se existe o arquivo programa iterativo no caminho especificado");
         data.setFileIterative(checkIfFileExists(PATHITERATIVE));
@@ -236,6 +302,9 @@ public class MachineService {
         data.iterativeMap();
     }
 
+    /**
+     * Método responsável por inicializar os dados necessários para a execução do programa monolítico.
+     */
     private void setupMonolithic() {
         log.info("Verificando se existe o arquivo programa monolitico no caminho especificado");
         data.setFileMonolithic(checkIfFileExists(PATHMONOLITHIC));
@@ -247,11 +316,19 @@ public class MachineService {
         showRegisters();
     }
 
+    /**
+     * Método responsável pela execução do programa monolítico, iniciando pela primeira linha.
+     */
     private void monolithicProgram() {
         log.info("Lendo primeira instrução");
         executeLine(data.getFileMonolithicLines().get(1));
     }
 
+    /**
+     * Método responsável pela execução da linha do programa monolítico.
+     *
+     * @param line
+     */
     private void executeLine(String line) {
         log.info("Instrução: " + line);
         String[] commands = line.split(" ");
@@ -267,6 +344,13 @@ public class MachineService {
         }
     }
 
+    /**
+     * Método responsável pela validação se a instrução se trata de um adição ou subtração, interrompendo a
+     * execução caso seja uma instrução não suportada.
+     *
+     * @param command
+     * @param goTo
+     */
     private void verifySumOrSubAndGoToLine(String command, String goTo) {
         String register = command.replaceAll("ad_", "").replaceAll("sub_", "");
         if (command.contains("ad_")) {
@@ -284,6 +368,13 @@ public class MachineService {
         verifyIfExistsAndCallExecute(goTo);
     }
 
+    /**
+     * Método responsável por receber o registrador e retornar o valor que está salvo, caso não encontre o
+     * registrador interrompe a execução.
+     *
+     * @param register
+     * @return
+     */
     private BigInteger getValueAndValid(String register) {
         BigInteger value = data.getRegistersMap().getOrDefault(register, null);
         if (value == null) {
@@ -293,6 +384,12 @@ public class MachineService {
         return value;
     }
 
+    /**
+     * Método responsável por verificar se o número da linha que constava na linha sendo executada existe,
+     * caso existir a linha é executada, caso contrário o programa chegou ao seu fim
+     *
+     * @param command
+     */
     private void verifyIfExistsAndCallExecute(String command) {
         String line = data.getFileMonolithicLines().getOrDefault(Integer.valueOf(command), null);
         log.info("Indo para a instrução " + command);
@@ -304,11 +401,18 @@ public class MachineService {
         }
     }
 
+    /**
+     * Método responsável por verificar se o registrador está igual a zero.
+     *
+     * @param command
+     * @return
+     */
     private boolean verifyRegister(String command) {
         log.info("Vericando SE o ");
         String register = command.replaceAll("_zero", "");
         log.info("registrador '" + register + "' é igual a ZERO");
-        boolean equalsZero = data.getRegistersMap().get(register).equals(BigInteger.ZERO) || data.getRegistersMap().get(register).equals(new BigInteger("0"));
+        boolean equalsZero = data.getRegistersMap().get(register).equals(BigInteger.ZERO) || data.
+                getRegistersMap().get(register).equals(new BigInteger("0"));
         if (equalsZero) {
             log.info("Registrador é igual ZERO");
         } else {
@@ -317,6 +421,9 @@ public class MachineService {
         return equalsZero;
     }
 
+    /**
+     * Método responsável por “printar” todos os registradores.
+     */
     private void showRegisters() {
         if (data == null || data.getRegistersMap() == null || data.getRegistersMap().isEmpty())
             return;
@@ -329,6 +436,9 @@ public class MachineService {
         log.info(DataDTO.SEPARATOR);
     }
 
+    /**
+     * Método responsável por solicitar ao usuário que preencha os registradores informados.
+     */
     private void initializeRegisters() {
         Set<String> keys = data.getRegistersMap().keySet();
         for (String key : keys) {
@@ -337,6 +447,12 @@ public class MachineService {
         }
     }
 
+    /**
+     * Método responsável por “printar” a pergunta e receber um valor inteiro.
+     *
+     * @param question
+     * @return
+     */
     private BigInteger getIntWithQuestion(String question) {
         System.out.println(DataDTO.SEPARATOR);
         System.out.println(question);
@@ -344,6 +460,12 @@ public class MachineService {
         return new Scanner(System.in).nextBigInteger();
     }
 
+    /**
+     * Método responsável por verificar se o arquivo existe no caminho especificado.
+     *
+     * @param path
+     * @return
+     */
     public File checkIfFileExists(String path) {
         File file = new File(path);
         if (!file.exists()) {

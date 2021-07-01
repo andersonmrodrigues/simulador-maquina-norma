@@ -30,6 +30,10 @@ public class DataDTO {
     private String firstDef;
     private Logger logger;
 
+    /**
+     * Método responsável pela criação dos registradores conforme a quantidade especificada pelo usuário,
+     * cada registrador receberá um letra do alfabeto de forma sequencial.
+     */
     public void createRegistersMap() {
         logger.info("Gerando registradores");
         registersMap = new LinkedHashMap<>();
@@ -40,6 +44,9 @@ public class DataDTO {
         logger.info("Registradores Gerados");
     }
 
+    /**
+     * Método utilizado para mapear o “Map” com as linhas do arquivo do programa iterativo.
+     */
     public void iterativeMap() {
         int count = 1;
         fileIterativeLines = new LinkedHashMap<>();
@@ -65,6 +72,9 @@ public class DataDTO {
         logger.info("Total de " + count + " linhas lidas");
     }
 
+    /**
+     * Método utilizado para mapear o “Map” com as linhas do arquivo do programa monolítico.
+     */
     public void monolithicMap() {
         int count = 1;
         fileMonolithicLines = new LinkedHashMap<>();
@@ -86,30 +96,72 @@ public class DataDTO {
         logger.info("Total de " + count + " linhas lidas");
     }
 
+    /**
+     * Método utilizado para verificar se a linha que está sendo passada via parâmetro
+     * possui algum comando de “enquanto/faça”.
+     *
+     * @param line
+     * @return
+     */
     public boolean isMatchesEnquantoFaca(String line) {
         return line.matches("(.*)enquanto ([a-zA-Z]*)_zero faça(.*)");
     }
 
+    /**
+     * Método utilizado para se a linha que está sendo passada via parâmetro possui algum comando de “se/senao”
+     *
+     * @param line
+     * @return
+     */
     public boolean isMatchesSeSenao(String line) {
         return line.matches("(.*)se ([a-zA-Z]*)_zero então (.+) senão (.+)(.*)");
     }
 
+    /**
+     * Método utilizado para verificar se a linha que está sendo passada via parâmetro possui alguma
+     * instrução para a operação de adicionar.
+     *
+     * @param line
+     * @return
+     */
     public boolean isMatchesAd(String line) {
         return line.matches("(.*)ad_([a-zA-Z]*)(.*)");
     }
 
+    /**
+     * Método utilizado para verificar se a linha que está sendo passada via parâmetro possui alguma instrução
+     * para a operação de subtrair.
+     *
+     * @param line
+     * @return
+     */
     public boolean isMatchesSub(String line) {
         return line.matches("(.*)sub_([a-zA-Z]*)(.*)");
     }
 
+    /**
+     * Método utilizado para verificar se a linha que está sendo passada via parâmetro possui algum comando “até/faça”.
+     *
+     * @param line
+     * @return
+     */
     public boolean isMatchesAteFaca(String line) {
         return line.matches("(.*)até ([a-zA-Z]*)_zero faça(.*)");
     }
 
+    /**
+     * Método utilizado para verificar se a linha que está sendo passada via parâmetro possui algum “def”.
+     *
+     * @param line
+     * @return
+     */
     public boolean isMatchesDef(String line) {
         return line.matches("(.*)def(.*)");
     }
 
+    /**
+     * Método utilizado para mapear o “Map” com as linhas do arquivo recursivo.
+     */
     public void recursiveMap() {
         int count = 1;
         fileRecursiveLines = new LinkedHashMap<>();
