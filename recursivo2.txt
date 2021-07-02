@@ -1,0 +1,2 @@
+R def (se a_zero então v senão S;R)
+S def sub_a;ad_b

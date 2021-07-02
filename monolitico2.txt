@@ -1,0 +1,7 @@
+1: se b_zero então vá_para 999 senão vá_para 2
+2: faça ad_a vá_para 3
+3: faça ad_a vá_para 4
+4: faça sub_b vá_para 5
+5: se c_zero então vá_para 6 senão vá_para 7
+6: faça ad_a vá_para 1
+7: faça sub_d vá_para 1

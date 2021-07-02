@@ -15,7 +15,7 @@ import java.util.logging.SimpleFormatter;
 public class MachineService {
 
     private final DataDTO data;
-    private static final String PATHMONOLITHIC = "D:\\Projetos\\simulador-maquina-norma\\monolitico.txt";
+    private static final String PATHMONOLITHIC = "D:\\Projetos\\simulador-maquina-norma\\monolitico2.txt";
     private static final String PATHITERATIVE = "D:\\Projetos\\simulador-maquina-norma\\iterativo.txt";
     private static final String PATHRECURSIVE = "D:\\Projetos\\simulador-maquina-norma\\recursivo.txt";
     private static final String FILELOGPATH = "D:\\Projetos\\simulador-maquina-norma\\log.txt";
@@ -276,6 +276,8 @@ public class MachineService {
         System.out.println("Resultado da Conversão:");
         System.out.println(monolithic.toString());
         System.out.println(DataDTO.SEPARATOR);
+        log.info("Resultado da Conversão:");
+        log.info(monolithic.toString());
     }
 
     /**

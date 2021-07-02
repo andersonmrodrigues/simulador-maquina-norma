@@ -3,3 +3,12 @@ até b_zero faça (
     ad_a;
     sub_b;
     (se c_zero então ad_a senão sub_d);)
+
+
+    INFO: a = 8
+    jul. 01, 2021 7:29:25 PM br.com.trabalho.MachineService showRegisters
+    INFO: b = 4
+    jul. 01, 2021 7:29:25 PM br.com.trabalho.MachineService showRegisters
+    INFO: c = 6
+    jul. 01, 2021 7:29:25 PM br.com.trabalho.MachineService showRegisters
+    INFO: d = 8
